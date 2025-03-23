@@ -29,7 +29,7 @@
 #define NOINLINE
 #define FAST_CODE
 #define FAST_CODE_NOINLINE
-#define FAST_DATA_ZERO_INIT
+#define FAST_DATA_ZERO_INIT         // 快速初始化数据
 #define FAST_DATA
 
 #define PID_PROFILE_COUNT 4

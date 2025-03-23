@@ -24,16 +24,24 @@
 #include "config/config.h"
 #include "pg/scheduler.h"
 
-#define TASK_PERIOD_HZ(hz) (1000000 / (hz))
-#define TASK_PERIOD_MS(ms) ((ms) * 1000)
-#define TASK_PERIOD_US(us) (us)
+#define TASK_PERIOD_HZ(hz) (1000000 / (hz))     // 计算任务周期, 运行一次需要多少 us.
+#define TASK_PERIOD_MS(ms) ((ms) * 1000)        // 将ms的任务周期时间转为us
+#define TASK_PERIOD_US(us) (us)                 // 返回时间 单位为 us
 
-#define TASK_STATS_MOVING_SUM_COUNT     8
+#define TASK_STATS_MOVING_SUM_COUNT     8       // 8次执行一次长任务
 
-#define LOAD_PERCENTAGE_ONE             100
+#define LOAD_PERCENTAGE_ONE             100     // 负载百分比
 
+
+// 掩码作用, 每8次执行一次长任务.   (count & SCHED_TASK_DEFER_MASK == 0){;}
 #define SCHED_TASK_DEFER_MASK           0x07 // Scheduler loop count is masked with this and when 0 long running tasks are processed
 
+/*
+最少等待1us
+最大等待12us
+减少时间1/50us
+增加1us
+*/
 #define SCHED_START_LOOP_MIN_US         1   // Wait at start of scheduler loop if gyroTask is nearly due
 #define SCHED_START_LOOP_MAX_US         12
 #define SCHED_START_LOOP_DOWN_STEP      50  // Fraction of a us to reduce start loop wait

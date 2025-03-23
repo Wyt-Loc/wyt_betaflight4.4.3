@@ -442,25 +442,25 @@ FAST_CODE void scheduler(void)
     const timeUs_t schedulerStartTimeUs = micros();
 #endif
     timeUs_t currentTimeUs;
-    uint32_t nowCycles;
+    uint32_t nowCycles;                             // 当前周期
     timeUs_t taskExecutionTimeUs = 0;
     task_t *selectedTask = NULL;
     uint16_t selectedTaskDynamicPriority = 0;
     uint32_t nextTargetCycles = 0;
     int32_t schedLoopRemainingCycles;
 
-#if defined(UNIT_TEST)
+#if defined(UNIT_TEST)                  // 如果是测试模式
     if (nextTargetCycles == 0) {
         lastTargetCycles = getCycleCounter();
         nextTargetCycles = lastTargetCycles + desiredPeriodCycles;
     }
 #endif
 
-    if (gyroEnabled) {
-        // Realtime gyro/filtering/PID tasks get complete priority
+    if (gyroEnabled) {      // 如果加表准备好了
+        // Realtime gyro/filtering/PID tasks get complete priority    // 陀螺，滤波，pid获得最高优先级
         task_t *gyroTask = getTask(TASK_GYRO);
-        nowCycles = getCycleCounter();
-#if defined(UNIT_TEST)
+        nowCycles = getCycleCounter();                                // 得到函数运行时间
+#if defined(UNIT_TEST)          // 如果是测试模式
         lastTargetCycles = clockMicrosToCycles(gyroTask->lastExecutedAtUs);
 #endif
         nextTargetCycles = lastTargetCycles + desiredPeriodCycles;

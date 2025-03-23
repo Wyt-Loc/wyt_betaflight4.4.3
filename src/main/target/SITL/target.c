@@ -303,7 +303,9 @@ uint64_t nanos64_real(void)
 uint64_t micros64_real(void)
 {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
+    clock_gettime(CLOCK_MONOTONIC, &ts);    // 获取的时间从系统启动开始计算。不会受到其他任何影响。
+    // ts.tv_sec：秒数。
+    //ts.tv_nsec：纳秒数(0 到 999,999,999)
     return 1.0e6*((ts.tv_sec + (ts.tv_nsec*1.0e-9)) - (start_time.tv_sec + (start_time.tv_nsec*1.0e-9)));
 }
 
@@ -364,7 +366,7 @@ uint32_t clockMicrosToCycles(uint32_t micros)
 {
     return micros;
 }
-uint32_t getCycleCounter(void)
+uint32_t getCycleCounter(void)      // 得到循环计数
 {
     return (uint32_t) (micros64() & 0xFFFFFFFF);
 }
