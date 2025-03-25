@@ -179,11 +179,11 @@ static timeUs_t taskTotalExecutionTime = 0;
 void taskSystemLoad(timeUs_t currentTimeUs)
 {
     static timeUs_t lastExecutedAtUs;
-    timeDelta_t deltaTime = cmpTimeUs(currentTimeUs, lastExecutedAtUs);
+    timeDelta_t deltaTime = cmpTimeUs(currentTimeUs, lastExecutedAtUs); // 返回时间差值
 
     // Calculate system load
-    if (deltaTime) {
-        averageSystemLoadPercent = 100 * taskTotalExecutionTime / deltaTime;
+    if (deltaTime) { // 时间不为0, 
+        averageSystemLoadPercent = 100 * taskTotalExecutionTime / deltaTime;  // 平均系统任务加载百分比。
         taskTotalExecutionTime = 0;
         lastExecutedAtUs = currentTimeUs;
     } else {
@@ -328,7 +328,7 @@ void schedulerResetCheckFunctionMaxExecutionTime(void)
     checkFuncMaxExecutionTimeUs = 0;
 }
 
-void schedulerInit(void)
+void schedulerInit(void)     // 调度器初始化
 {
     queueClear();
     queueAdd(getTask(TASK_SYSTEM));

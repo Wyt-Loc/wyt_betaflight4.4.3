@@ -195,38 +195,39 @@ typedef enum {
 
 typedef struct {
     // Configuration
-    const char * taskName;
-    const char * subTaskName;
-    bool (*checkFunc)(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);
-    void (*taskFunc)(timeUs_t currentTimeUs);
-    timeDelta_t desiredPeriodUs;        // target period of execution
-    const int8_t staticPriority;        // dynamicPriority grows in steps of this size
+    const char * taskName;          //  任务名称
+    const char * subTaskName;       //  子任务名称
+    bool (*checkFunc)(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs);  // 任务执行条件检查 true 执行， false 不执行
+    void (*taskFunc)(timeUs_t currentTimeUs);   // 任务执行函数
+    timeDelta_t desiredPeriodUs;        // target period of execution   目标执行周期（微秒）
+    const int8_t staticPriority;        // dynamicPriority grows in steps of this size  动态优先级增长的步长
 } task_attribute_t;
 
+// dynamicPriority += staticPriority 提示任务执行优先级
 typedef struct {
-    // Task static data
-    task_attribute_t *attribute;
+    // Task static data 任务静态数据
+    task_attribute_t *attribute;        // 指向任务静态属性的指针
 
-    // Scheduling
-    uint16_t dynamicPriority;           // measurement of how old task was last executed, used to avoid task starvation
-    uint16_t taskAgePeriods;
-    timeDelta_t taskLatestDeltaTimeUs;
-    timeUs_t lastExecutedAtUs;          // last time of invocation
-    timeUs_t lastSignaledAtUs;          // time of invocation event for event-driven tasks
-    timeUs_t lastDesiredAt;             // time of last desired execution
+    // Scheduling 调度
+    uint16_t dynamicPriority;           // measurement of how old task was last executed, used to avoid task starvation 动态优先级，防止任务饥饿
+    uint16_t taskAgePeriods;            // 任务未被调度的周期数
+    timeDelta_t taskLatestDeltaTimeUs;  // 上次实际执行时间与预期时间的偏差
+    timeUs_t lastExecutedAtUs;          // last time of invocation 上次实际执行的时间戳（μs）
+    timeUs_t lastSignaledAtUs;          // time of invocation event for event-driven tasks  事件驱动任务最后一次被触发的时间
+    timeUs_t lastDesiredAt;             // time of last desired execution   上次预期执行的时间戳
 
-    // Statistics
-    float    movingAverageCycleTimeUs;
-    timeUs_t anticipatedExecutionTime;  // Fixed point expectation of next execution time
-    timeUs_t movingSumDeltaTime10thUs;  // moving sum over 64 samples
-    timeUs_t movingSumExecutionTime10thUs;
-    timeUs_t maxExecutionTimeUs;
-    timeUs_t totalExecutionTimeUs;      // total time consumed by task since boot
-    timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation
+    // Statistics   统计信息
+    float    movingAverageCycleTimeUs;  // 移动平均执行周期（μs）
+    timeUs_t anticipatedExecutionTime;  // Fixed point expectation of next execution time   预测的下次执行时间
+    timeUs_t movingSumDeltaTime10thUs;  // moving sum over 64 samples   64 次执行的时间偏差移动和（0.1μs 精度）
+    timeUs_t movingSumExecutionTime10thUs;  // 64 次执行的实际时间移动和
+    timeUs_t maxExecutionTimeUs;            // 历史最大执行时间
+    timeUs_t totalExecutionTimeUs;      // total time consumed by task since boot   任务自启动后的总执行时间
+    timeUs_t lastStatsAtUs;             // time of last stats gathering for rate calculation        上次统计时间戳
 #if defined(USE_LATE_TASK_STATISTICS)
-    uint32_t runCount;
-    uint32_t lateCount;
-    timeUs_t execTime;
+    uint32_t runCount;      // 任务执行总次数
+    uint32_t lateCount;     // 延迟执行次数
+    timeUs_t execTime;      // 累计执行时间(用于计算延迟率)
 #endif
 } task_t;
 
